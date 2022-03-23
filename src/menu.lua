@@ -13,8 +13,8 @@ if gpu and screen then
   local hw = w // 2
 
   local function draw(title, opts, sel)
-    gpu.setBackground(0xFFFFFF)
-    gpu.setForeground(0x000000)
+    gpu.setForeground(0xFFFFFF)
+    gpu.setBackground(0x000000)
     gpu.set(hw - (#"Cynosure Loader v2" // 2), 2, "Cynosure Loader v2")
     gpu.set(hw - (#title // 2), h - #opts - 2, title)
     for i=#opts, 1, -1 do
@@ -30,6 +30,9 @@ if gpu and screen then
     local time = computer.uptime()
     timeout = timeout or math.huge
     local maxtime = time + timeout
+    gpu.setForeground(0xFFFFFF)
+    gpu.setBackground(0)
+    gpu.fill(1, 1, w, h, " ")
     while true do
       draw(title, opts, selected)
       time = computer.uptime()
