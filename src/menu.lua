@@ -33,10 +33,11 @@ if gpu and screen then
     gpu.setForeground(0xFFFFFF)
     gpu.setBackground(0)
     gpu.fill(1, 1, w, h, " ")
+    gpu.set(w, h, tostring(math.floor(maxtime - time + 0.5)))
     while true do
       draw(title, opts, selected)
       time = computer.uptime()
-      local sig, _, char, code = computer.pullSignal(maxtime - time)
+      local sig, _, char, code = computer.pullSignal(0.5)
       if sig == "key_down" then
         maxtime = math.huge
         if char == 13 then
@@ -47,7 +48,14 @@ if gpu and screen then
           selected = math.min(#opts, selected + 1)
         end
       elseif time >= maxtime then
+        gpu.setForeground(0xFFFFFF)
+        gpu.setBackground(0)
+        gpu.fill(1, 1, w, h, " ")
         return selected
+      else
+        gpu.setForeground(0xFFFFFF)
+        gpu.setBackground(0)
+        gpu.set(w, h, tostring(maxtime - time))
       end
     end
   end
