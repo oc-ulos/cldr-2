@@ -10,18 +10,18 @@ if gpu and screen then
   local w, h = gpu.maxResolution()
   gpu.setResolution(w, h)
 
-  local hw = w // 2
+  local hw = math.floor(w / 2)
 
   local function draw(title, opts, sel)
     gpu.setForeground(0xFFFFFF)
     gpu.setBackground(0x000000)
-    gpu.set(hw - (#"Cynosure Loader v2" // 2), 2, "Cynosure Loader v2")
-    gpu.set(hw - (#title // 2), h - #opts - 2, title)
+    gpu.set(hw - math.floor(#"Cynosure Loader v2" / 2), 2, "Cynosure Loader v2")
+    gpu.set(hw - math.floor(#title / 2), h - #opts - 2, title)
     for i=#opts, 1, -1 do
       gpu.setForeground(i == sel and 0 or 0xFFFFFF)
       gpu.setBackground(i == sel and 0xFFFFFF or 0)
       gpu.fill(1, h - (#opts - i + 1), w, 1, " ")
-      gpu.set(hw - (#opts[i] // 2), h - (#opts - i + 1), opts[i])
+      gpu.set(hw - math.floor(#opts[i] / 2), h - (#opts - i + 1), opts[i])
     end
   end
 
