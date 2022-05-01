@@ -22,6 +22,11 @@ local function to_lines(str)
   end
 end
 
+local arch_aliases = {
+  lua52 = "Lua 5.2",
+  lua53 = "Lua 5.3"
+}
+
 local function parse_config(str)
   local entries = {}
   local names = {}
@@ -44,8 +49,14 @@ local function parse_config(str)
       entry.flags = table.pack(table.unpack(words, 2))
     elseif words[1] == "boot" then
       entry.boot = words[2]
+    elseif words[1] == "arch" then
+      entry.arch = arch_aliases[words[2]]
     end
   end
   local opt = menu("Select a boot option:", names, default, timeout)
-  return entries[opt]
+
+  local selected = entries[opt]
+  if selected.arch then computer.setArchitecture(selected.arch) end
+
+  return selected
 end
