@@ -15,7 +15,8 @@ if gpu and screen then
   local function draw(title, opts, sel)
     gpu.setForeground(0xFFFFFF)
     gpu.setBackground(0x000000)
-    gpu.set(hw - math.floor(#"Cynosure Loader v2" / 2), 2, "Cynosure Loader v2")
+    local version = "Cynosure Loader v$[{cat version}]"
+    gpu.set(hw - math.floor(#version / 2), 2, version)
     gpu.set(hw - math.floor(#title / 2), h - #opts - 2, title)
     for i=#opts, 1, -1 do
       gpu.setForeground(i == sel and 0 or 0xFFFFFF)
