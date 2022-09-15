@@ -13,9 +13,11 @@ local function read_file(f)
   local fd, err = fs.open(f, "r")
   if not fd then error(err) end
   local data = ""
+
   for chunk in function()return fs.read(fd, math.huge) end do
     data = data .. chunk
   end
+
   fs.close(fd)
   return data
 end
