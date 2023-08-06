@@ -71,3 +71,7 @@ local function parse_config(str)
 
   return selected
 end
+
+local entry = parse_config(fs.read_file("/boot/cldr.cfg"))
+local data = assert(fs.read_file(entry.boot))
+assert(load(data, "="..entry.boot, "bt", _G))(table.unpack(entry.flags))
