@@ -18,7 +18,9 @@ do
     if ctype == "filesystem" or ctype == "drive" then
       local fstype, interface = fs.detect(component.proxy(addr))
       if fstype then
-        detected[#detected+1] = {interface=interface,type=fstype,label=interface.label or addr}
+        if interface:exists("/boot/cldr.cfg") then
+          detected[#detected+1] = {interface=interface,type=fstype,label=interface.label or addr}
+        end
       end
     end
   end
@@ -37,4 +39,6 @@ do
     opt = menu("Select a boot device:", names, 1, 5)
   end
   fs.read_file = function(f) return detected[opt].interface:read_file(f) end
+  -- unused currently
+  fs.exists = function(f) return detected[opt].interface:exists(f) end
 end

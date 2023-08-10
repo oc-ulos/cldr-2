@@ -116,6 +116,10 @@ do
     return data
   end
 
+  function _node:exists(f)
+    return not not self:resolve(f)
+  end
+
   function fs.readers.simplefs(drive)
     if drive.type ~= "drive" then return end
     if unpack("superblock", drive.readSector(1)).signature == "\x1bSFS" then

@@ -15,6 +15,10 @@ do
     return data
   end
 
+  function _node:exists(f)
+    return self.fs.exists(f)
+  end
+
   function fs.readers.managed(comp)
     if comp.type == "filesystem" then
       return setmetatable({
