@@ -118,7 +118,7 @@ do
     return not not self:resolve(f)
   end
 
-  function fs.readers.simplefs(drive)
+  function fs.filesystems.simplefs(drive)
     if drive.type ~= "drive" then return end
     if unpack("superblock", drive.readSector(1)).signature == "\x1bSFS" then
       local node = setmetatable({

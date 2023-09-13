@@ -19,7 +19,7 @@ do
     return self.fs.exists(f)
   end
 
-  function fs.readers.managed(comp)
+  function fs.filesystems.managed(comp)
     if comp.type == "filesystem" then
       return setmetatable({
         fs = comp,

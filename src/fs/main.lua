@@ -1,12 +1,65 @@
 -- Abstract filesystem support
 
-local fs = {readers = {}}
+local fs = {readers = {}, partitions = {}}
+
+-- create partition cover object for unmanaged drives
+-- code taken directly from Cynosure 2
+function fs.create_subdrive(drive, start, size)
+  local sub = {}
+  local sector, byte = start, (start - 1) * drive.getSectorSize()
+  local byteSize = size * drive.getSectorSize()
+  function sub.readSector(n)
+    if n < 1 or n > size then
+      error("invalid offset, not in a usable sector", 0)
+    end
+    return drive.readSector(sector + n)
+  end
+  function sub.writeSector(n, d)
+    if n < 1 or n > size then
+      error("invalid offset, not in a usable sector", 0)
+    end
+    return drive.writeSector(sector + n, d)
+  end
+  function sub.readByte(n)
+    if n < 1 or n > byteSize then return 0 end
+    return drive.readByte(n + byteOffset)
+  end
+  function sub.writeByte(n, i)
+    if n < 1 or n > byteSize then return 0 end
+    return drive.writeByte(n + byteOffset, i)
+  end
+  sub.getSectorSize = drive.getSectorSize
+  function sub.getCapacity()
+    return drive.getSectorSize() * size
+  end
+  sub.type = "drive"
+  return sub
+end
 
 function fs.detect(component)
-  for name, reader in pairs(fs.readers) do
-    local result = reader(component)
-    if result then return name, result end
+  local partitions = {component}
+
+  for pt, partition in pairs(fs.partitions) do
+    local result = partition(component)
+    if result then
+      partitions = result
+      break
+    end
   end
+
+  local results = {}
+  for i=1, #partitions do
+    local part = partitions[i]
+    for name, reader in pairs(fs.filesystems) do
+      local result = reader(part)
+      if result then
+        results[#results+1] = { name = name, proxy = result }
+        break
+      end
+    end
+  end
+
+  return results
 end
 
 --@[{includeif("FS_MANAGED", "src/fs/managed.lua")}]
@@ -16,10 +69,14 @@ do
   local detected = {}
   for addr, ctype in component.list() do
     if ctype == "filesystem" or ctype == "drive" then
-      local fstype, interface = fs.detect(component.proxy(addr))
-      if fstype then
+      local partitions = fs.detect(component.proxy(addr))
+      for i=1, #partitions do
+        local fstype, interface = partitions[i].name, partitions[i].proxy
         if interface:exists("/boot/cldr.cfg") then
-          detected[#detected+1] = {interface=interface,type=fstype,label=interface.label or addr}
+          detected[#detected+1] = {
+            interface=interface,
+            type=fstype,
+            label=(interface.label or addr)..","..i}
         end
       end
     end
