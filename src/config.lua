@@ -61,6 +61,9 @@ local function parse_config(str)
 
     elseif words[1] == "arch" then
       entry.arch = arch_aliases[words[2]]
+
+    elseif words[1] == "reboot" then
+      entry.reboot = true
     end
   end
 
@@ -68,6 +71,7 @@ local function parse_config(str)
 
   local selected = entries[opt]
   if selected.arch then computer.setArchitecture(selected.arch) end
+  if selected.reboot then computer.shutdown(true) end
 
   return selected
 end

@@ -1,6 +1,6 @@
 -- Abstract filesystem support
 
-local fs = {readers = {}, partitions = {}}
+local fs = {filesystems = {}, partitions = {}}
 
 -- create partition cover object for unmanaged drives
 -- code taken directly from Cynosure 2
@@ -62,6 +62,9 @@ function fs.detect(component)
   return results
 end
 
+-- partitions
+--@[{includeif("PT_OSDI", "src/fs/osdi.lua")}]
+-- filesystems
 --@[{includeif("FS_MANAGED", "src/fs/managed.lua")}]
 --@[{includeif("FS_SFS", "src/fs/simplefs.lua")}]
 
@@ -69,7 +72,9 @@ do
   local detected = {}
   for addr, ctype in component.list() do
     if ctype == "filesystem" or ctype == "drive" then
+      write("detect " .. addr)
       local partitions = fs.detect(component.proxy(addr))
+      write(#partitions .. " partition(s) are bootable")
       for i=1, #partitions do
         local fstype, interface = partitions[i].name, partitions[i].proxy
         if interface:exists("/boot/cldr.cfg") then
@@ -81,6 +86,8 @@ do
       end
     end
   end
+
+  write("found " .. #detected .. " partition(s) with configuration")
 
   if #detected == 0 then
     error("no boot filesystems found!")

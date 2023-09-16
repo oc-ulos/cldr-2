@@ -11,12 +11,14 @@ do
     if meta[1] ~= 1 or meta[2] ~= 0 or meta[3] ~= magic then return end
     local partitions = {}
 
+
     repeat
       sector = sector:sub(33)
-      meta = {format:unpack(sector)}
+      meta = {pattern:unpack(sector)}
       meta[3] = meta[3]:gsub("\0", "")
       meta[5] = meta[5]:gsub("\0", "")
       if #meta[5] > 0 then
+        write("found " .. meta[5])
         partitions[#partitions+1] = fs.create_subdrive(drive, meta[1], meta[2])
       end
     until #sector <= 32
