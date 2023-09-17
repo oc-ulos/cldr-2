@@ -9,7 +9,7 @@ do
       names = {"signature", "flags", "revision", "nl_blocks", "blocksize", "blocks", "blocks_used"}
     },
     nl_entry = {
-      pack = "<I2I2I2I2I2I4I8I8I2I2c30",
+      pack = "<I2I2I2I2I2I4I8I8I2I2c94",
       names = {"flags", "datablock", "next_entry", "last_entry", "parent", "size", "created", "modified", "uid", "gid", "fname"}
     },
   }
@@ -57,10 +57,10 @@ do
   end
 
   function _node:readNamelistEntry(n)
-    local offset = n * 64 % self.sblock.blocksize + 1
+    local offset = n * 128 % self.sblock.blocksize + 1
     local block = math.floor(n/8)
     local blockData = self:readBlock(block+2)
-    local namelistEntry = blockData:sub(offset, offset + 63)
+    local namelistEntry = blockData:sub(offset, offset + 127)
     local ent = unpack("nl_entry", namelistEntry)
     ent.fname = ent.fname:gsub("\0", "")
     return ent
