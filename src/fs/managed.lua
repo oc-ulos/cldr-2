@@ -23,6 +23,7 @@ do
     if comp.type == "filesystem" then
       return setmetatable({
         fs = comp,
+        index = 1,
         label = comp.getLabel(),
       }, {__index = _node})
     end

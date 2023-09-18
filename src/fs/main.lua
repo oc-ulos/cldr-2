@@ -53,7 +53,8 @@ function fs.detect(component)
     for name, reader in pairs(fs.filesystems) do
       local result = reader(part)
       if result then
-        results[#results+1] = { name = name, proxy = result }
+        results[#results+1] = {
+          name = name, proxy = result, index = part.index }
         break
       end
     end
@@ -82,7 +83,7 @@ do
             address=addr,
             interface=interface,
             type=fstype,
-            index=i,
+            index=partitions[i].index,
             label=(interface.label or addr)..","..i}
         end
       end
@@ -107,7 +108,12 @@ do
   fs.read_file = function(f) return detected[opt].interface:read_file(f) end
   fs.exists = function(f) return detected[opt].interface:exists(f) end
 
-  if detected[opt].type ~= "managed" then
+  -- supposedly this function is "deprecated," but everybody still uses it
+  if detected[opt].type == "managed" then
+    function computer.getBootAddress()
+      return detected[opt].address
+    end
+  else
     function computer.getBootAddress()
       return detected[opt].address..","..detected[opt].index
     end
