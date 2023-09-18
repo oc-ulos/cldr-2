@@ -79,8 +79,10 @@ do
         local fstype, interface = partitions[i].name, partitions[i].proxy
         if interface:exists("/boot/cldr.cfg") then
           detected[#detected+1] = {
+            address=addr,
             interface=interface,
             type=fstype,
+            index=i,
             label=(interface.label or addr)..","..i}
         end
       end
@@ -103,6 +105,11 @@ do
     opt = menu("Select a boot device:", names, 1, 5)
   end
   fs.read_file = function(f) return detected[opt].interface:read_file(f) end
-  -- unused currently
   fs.exists = function(f) return detected[opt].interface:exists(f) end
+
+  if detected[opt].type ~= "managed" then
+    function computer.getBootAddress()
+      return detected[opt].address..","..detected[opt].index
+    end
+  end
 end
