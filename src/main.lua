@@ -1,6 +1,8 @@
 -- CLDR 2
 
+local write = ... or function() end
+
 --#include "src/menu.lua"
---#include "src/config_base.lua"
---#include "src/config_managed.lua"
+--#include "src/fs/main.lua"
+--#include "src/config.lua"
 while true do coroutine.yield() end
