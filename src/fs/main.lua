@@ -12,13 +12,13 @@ function fs.create_subdrive(drive, start, size)
     if n < 1 or n > size then
       error("invalid offset, not in a usable sector", 0)
     end
-    return drive.readSector(sector + n)
+    return drive.readSector(sector + n - 1)
   end
   function sub.writeSector(n, d)
     if n < 1 or n > size then
       error("invalid offset, not in a usable sector", 0)
     end
-    return drive.writeSector(sector + n, d)
+    return drive.writeSector(sector + n - 1, d)
   end
   function sub.readByte(n)
     if n < 1 or n > byteSize then return 0 end
